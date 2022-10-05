@@ -1,0 +1,216 @@
+<?php
+$insert=0;
+if($_SERVER['REQUEST_METHOD'] == "POST")
+{
+    $server="localhost";
+    $username="root";
+    $password="";
+    $database="book";
+
+    $con=mysqli_connect($server,$username,$password,$database);
+
+     if(!$con)
+     {
+       die("Connection to this database failed due to". mysqli_connect_error());
+
+     }  
+     echo "Success connecting to the database";
+    
+     $Username=$_POST['Username'];
+     $User_pass=$_POST['User_pass'];
+     $mob_digit=$_POST['mob_digit'];
+     $email=$_POST['email'];
+     $address=$_POST['address'];
+     $city=$_POST['city'];
+     $state=$_POST['state'];
+     $District=$_POST['District'];
+     $pincode=$_POST['pincode'];
+
+     $sql= "SELECT * FROM `store` WHERE `username`='$Username'";
+     $stmt = mysqli_query($con, $sql);
+     $num=mysqli_num_rows($stmt);
+     echo $num;
+
+     if(empty(trim($Username)) || empty(trim($User_pass)) || empty(trim($mob_digit)) || empty(trim($email)) || empty(trim($address)) || empty(trim($city)) || empty(trim($state)) || empty(trim($District)) || empty(trim($pincode)))
+     {
+       // echo "UserName Or Password Can't be empty";
+        $insert=1;
+     } 
+     else if(strlen($Username)<5 || strlen($User_pass)<5)
+     {
+         $insert=3;
+     }
+     else if($num!=0)
+     {
+             $insert=4;
+             //echo "The Username is taken";
+     }
+     else
+     {
+           $sql="INSERT INTO `book`.`store` (`username`, `password`, `email`, `mobile`, `created_at`) VALUES ('$Username', '$User_pass', '$email', '$mob_digit', current_timestamp())";
+           //echo $sql;
+            if($con->query($sql) == true)
+            {
+             //echo "Username:" .$mob_digit;
+             //echo "SucessFully Inserted";
+             $insert=2;
+             $sql="SELECT * FROM `book`.`store`";
+             $res=mysqli_query($con,$sql);
+             //echo mysqli_num_rows($res);
+            }
+            else
+            {
+             echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+             <strong>Error!</strong> We are Facing Some Technical Issue! We Regret Inconvenience Caused!
+             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+             <span aria-hidden="true">×</span>
+             </button>
+             </div>';
+             echo "ERROR: $sql <br> $con->error";
+            }   
+      } 
+     $con->close();
+}     
+?>
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>PHP login system!</title>
+  </head>
+  <body>
+    <center><h1>ONLINE BOOK STORE</h1></center>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+  <ul class="navbar-nav">
+      <!-- <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="register.php">Register</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="login.php">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="logout.php">Logout</a>
+     </li>      -->
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-4">
+<h4>Please Register Here:</h4>
+<hr>
+<form action="register.php" method="post">
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputEmail4">Username</label>
+      <input type="text" class="form-control" name="Username" id="inputEmail4" placeholder="name">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputPassword4">Password</label>
+      <input type="password" class="form-control" name ="User_pass" id="inputPassword4" placeholder="Password">
+    </div>
+  </div>
+<div class="form-row">  
+  <div class="form-group col-md-6">
+      <label for="">Mobile Number</label>
+      <input type="phone" class="form-control" name ="mob_digit" id="inputPassword" placeholder="Mobile Number" maxlength="10">
+  </div>
+  <div class="form-group col-md-6">
+      <label for="inputEmail4">Email</label>
+      <input type="email" class="form-control" name ="email" id="inputEmail4" placeholder="Email">
+  </div>
+</div>  
+  <div class="form-group">
+    <label for="inputAddress2">Address</label>
+    <input type="text" class="form-control" id="inputAddress2" name="address" placeholder="Apartment, studio,floor...">
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="inputCity">City</label>
+      <input type="text" class="form-control" id="inputCity" name="city" placeholder="City">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="inputState">State</label>
+      <input type="text" select id="inputState" class="form-control" name="state" placeholder="State">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="inputState">District</label>
+      <input type="text" select id="inputDistrict" class="form-control" name="District" placeholder="District">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="inputZip">Pincode</label>
+      <input type="phone" class="form-control" id="inputZip" name="pincode" placeholder="pincode" maxlength="6">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="gridCheck">
+      <label class="form-check-label" for="gridCheck">
+        Check me out
+      </label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Sign in</button>
+  <?php
+     if($insert==1)
+     {
+       echo "<br>";
+       echo "<br>";
+       echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+       <strong>UnSuccessfull!</strong> Please Fill Required Detail!
+       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+         <span aria-hidden="true">×</span>
+       </button>
+     </div>';     
+     }
+     else if($insert==2)
+     {
+       echo "<br>";
+       echo "<br>";
+       echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+       <strong>Successfully Registered!</strong>
+       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+         <span aria-hidden="true">×</span>
+         header("location:index.html");
+       </button>
+     </div>';
+     }
+     else if($insert==3)
+     {
+        echo "<br>";
+        echo "<br>";
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>UnSuccessfull!</strong> Username or Password Must be greater than 5 character!
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>';
+     }
+     else if($insert==4)
+     {
+      echo "<br>";
+      echo "<br>";
+      echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>UnSuccessfull!</strong> Username is taken Please Fill Another Username!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>';
+     }
+  ?>
+</form>
+</div>
